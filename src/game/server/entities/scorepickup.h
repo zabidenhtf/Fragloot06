@@ -5,12 +5,12 @@
 
 #include <game/server/entity.h>
 
-const int PickupPhysSize = 32;
+const int PickupPhysSize = 48;
 
 class CScorePickup : public CEntity
 {
 public:
-	CScorePickup(CGameWorld *pGameWorld, const char *m_DeadPlayerName, int m_KillerID);
+	CScorePickup(CGameWorld *pGameWorld, const char *m_DeadPlayerName, int m_VictimID, int m_KillerID);
 	~CScorePickup();
 
 	virtual void Tick();
@@ -18,6 +18,7 @@ public:
 private:
     char *m_DeadPlayerName;
     int m_KillerID;
+    int m_VictimID;
     int m_aExtraIDs[3];
 	vec2 m_Vel;
 	static const int ms_PhysSize = 14;

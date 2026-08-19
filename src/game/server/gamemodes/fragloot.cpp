@@ -36,7 +36,7 @@ int CGameControllerFragloot::OnCharacterDeath(class CCharacter *pVictim, class C
 		else
         {
             // Spawing score pickup
-			CScorePickup *pScorePickup = new CScorePickup(&GameServer()->m_World, GameServer()->Server()->ClientName(pVictim->GetPlayer()->GetCID()), pKiller->GetCID());
+			CScorePickup *pScorePickup = new CScorePickup(&GameServer()->m_World, GameServer()->Server()->ClientName(pVictim->GetPlayer()->GetCID()), pVictim->GetPlayer()->GetCID(), pKiller->GetCID());
 			pScorePickup->m_Pos = pVictim->m_Pos;
         }
 	}

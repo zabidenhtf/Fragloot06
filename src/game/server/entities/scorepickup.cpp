@@ -4,11 +4,12 @@
 #include <game/server/gamecontext.h>
 #include "scorepickup.h"
 
-CScorePickup::CScorePickup(CGameWorld *pGameWorld, const char *m_DeadPlayerName, int m_KillerID)
+CScorePickup::CScorePickup(CGameWorld *pGameWorld, const char *m_DeadPlayerName, int m_VictimID, int m_KillerID)
 : CEntity(pGameWorld, CGameWorld::ENTTYPE_PICKUP)
 {
     this->m_DeadPlayerName = (char*)m_DeadPlayerName;
     this->m_KillerID = m_KillerID;
+    this->m_VictimID = m_VictimID;
 	this->m_Vel = vec2(0,0);
     // Finding extra ID's for cool pickup
     for(int i = 0; i < 3; i++)
@@ -26,7 +27,7 @@ CScorePickup::~CScorePickup()
 void CScorePickup::Tick()
 {
     // If player goes moves away from pickup
-	CCharacter *pChrLeaving = GameServer()->m_World.ClosestCharacter(m_Pos, 64.0f, 0);
+	CCharacter *pChrLeaving = GameServer()->m_World.ClosestCharacter(m_Pos, 86.0f, 0);
 	if(pChrLeaving && pChrLeaving->IsAlive())
 	{
 	    // We removing text
@@ -46,12 +47,20 @@ void CScorePickup::Tick()
 	CCharacter *pChr = GameServer()->m_World.ClosestCharacter(m_Pos, 20.0f, 0);
 	if(pChr && pChr->IsAlive())
 	{
+	    GameServer()->SendBroadcast("", pChrLeaving->GetPlayer()->GetCID());
 	    // If yes we give for him 1 score point
 	    // But if he steals we give for him extra point
 	    if (pChr->GetPlayer()->GetCID() == m_KillerID){
             pChr->GetPlayer()->m_Score++;
             char aBuf[256];
             str_format(aBuf, sizeof(aBuf), "%s collected 1 point from player %s",
+                    GameServer()->Server()->ClientName(pChr->GetPlayer()->GetCID()), m_DeadPlayerName);
+            GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
+	    }
+	    else if (pChr->GetPlayer()->GetCID() == m_VictimID){
+            pChr->GetPlayer()->m_Score++;
+            char aBuf[256];
+            str_format(aBuf, sizeof(aBuf), "%s collected own point",
                     GameServer()->Server()->ClientName(pChr->GetPlayer()->GetCID()), m_DeadPlayerName);
             GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 	    }
