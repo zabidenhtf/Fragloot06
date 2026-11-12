@@ -22,6 +22,7 @@ void CGameControllerFragloot::Tick()
 
 int CGameControllerFragloot::OnCharacterDeath(class CCharacter *pVictim, class CPlayer *pKiller, int Weapon)
 {
+    pVictim->GetPlayer()->m_FraglootCombo = 0;
 	// do scoreing
 	if(!pKiller || Weapon == WEAPON_GAME)
 		return 0;
@@ -38,6 +39,10 @@ int CGameControllerFragloot::OnCharacterDeath(class CCharacter *pVictim, class C
             // Spawing score pickup
 			CScorePickup *pScorePickup = new CScorePickup(&GameServer()->m_World, GameServer()->Server()->ClientName(pVictim->GetPlayer()->GetCID()), pVictim->GetPlayer()->GetCID(), pKiller->GetCID());
 			pScorePickup->m_Pos = pVictim->m_Pos;
+			// Giving combo
+			if (pKiller->m_FraglootCombo <= 4){
+                pKiller->m_FraglootCombo++;
+			}
         }
 	}
 	if(Weapon == WEAPON_SELF)

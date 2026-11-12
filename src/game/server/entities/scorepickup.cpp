@@ -51,10 +51,21 @@ void CScorePickup::Tick()
 	    // If yes we give for him 1 score point
 	    // But if he steals we give for him extra point
 	    if (pChr->GetPlayer()->GetCID() == m_KillerID){
-            pChr->GetPlayer()->m_Score++;
+            pChr->GetPlayer()->m_Score+=pChr->GetPlayer()->m_FraglootCombo;
             char aBuf[256];
-            str_format(aBuf, sizeof(aBuf), "%s collected 1 point from player %s",
+            if (pChr->GetPlayer()->m_FraglootCombo == 1){
+                 str_format(aBuf, sizeof(aBuf), "%s collected 1 point from player %s",
                     GameServer()->Server()->ClientName(pChr->GetPlayer()->GetCID()), m_DeadPlayerName);
+            }
+            else if (pChr->GetPlayer()->m_FraglootCombo == 2){
+                str_format(aBuf, sizeof(aBuf), "%s collected 1 point from player %s (BONUS: 1 Extra point for combo)",
+                    GameServer()->Server()->ClientName(pChr->GetPlayer()->GetCID()), m_DeadPlayerName);
+            }
+            else{
+                str_format(aBuf, sizeof(aBuf), "%s collected 1 point from player %s (BONUS: %d Extra points for combo)",
+                    GameServer()->Server()->ClientName(pChr->GetPlayer()->GetCID()), m_DeadPlayerName, pChr->GetPlayer()->m_FraglootCombo-1);
+            }
+
             GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 	    }
 	    else if (pChr->GetPlayer()->GetCID() == m_VictimID){
@@ -65,10 +76,21 @@ void CScorePickup::Tick()
             GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 	    }
 	    else{
-            pChr->GetPlayer()->m_Score+=2;
+            pChr->GetPlayer()->m_Score+=pChr->GetPlayer()->m_FraglootCombo+1;
             char aBuf[256];
-            str_format(aBuf, sizeof(aBuf), "%s collected 1 point from player %s (BONUS: 1 Extra point for steal)",
+
+            if (pChr->GetPlayer()->m_FraglootCombo == 1){
+                 str_format(aBuf, sizeof(aBuf), "%s collected 1 point from player %s (BONUS: 1 Extra point for steal)",
                     GameServer()->Server()->ClientName(pChr->GetPlayer()->GetCID()), m_DeadPlayerName);
+            }
+            else if (pChr->GetPlayer()->m_FraglootCombo == 2){
+                str_format(aBuf, sizeof(aBuf), "%s collected 1 point from player %s (BONUS: 1 Extra point for combo & 1 Extra point for steal)",
+                    GameServer()->Server()->ClientName(pChr->GetPlayer()->GetCID()), m_DeadPlayerName);
+            }
+            else{
+                str_format(aBuf, sizeof(aBuf), "%s collected 1 point from player %s (BONUS: %d Extra points for combo & 1 Extra point for steal)",
+                    GameServer()->Server()->ClientName(pChr->GetPlayer()->GetCID()), m_DeadPlayerName, pChr->GetPlayer()->m_FraglootCombo-1);
+            }
             GameServer()->SendChat(-1, CGameContext::CHAT_ALL, aBuf);
 	    }
 
